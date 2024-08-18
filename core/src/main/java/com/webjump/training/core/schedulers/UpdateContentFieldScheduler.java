@@ -37,7 +37,7 @@ public class UpdateContentFieldScheduler implements Runnable {
     /**
      *  Logger
      */
-    private static final Logger log = LoggerFactory.getLogger(UpdateContentFieldScheduler.class);
+    private Logger logger = LoggerFactory.getLogger(UpdateContentFieldScheduler.class);
 
     /**
      *  Custom parameter
@@ -117,7 +117,7 @@ public class UpdateContentFieldScheduler implements Runnable {
      */
     private void removeScheduler() {
 
-        log.info("Removing scheduler: {}", schedulerId);
+        logger.info("Removing scheduler: {}", schedulerId);
 
         /**
          * Unscheduling/removing the scheduler
@@ -153,11 +153,11 @@ public class UpdateContentFieldScheduler implements Runnable {
              */
             scheduler.schedule(this, scheduleOptions);
 
-            log.info("Scheduler added");
+            logger.info("Scheduler added");
 
         } else {
 
-            log.info("Scheduler is disabled");
+            logger.info("Scheduler is disabled");
 
         }
     }
@@ -179,9 +179,9 @@ public class UpdateContentFieldScheduler implements Runnable {
 
             session.save();
             session.logout();
-            log.info("Custom Scheduler is running correctly!!!");
+            logger.info("Custom Scheduler is running correctly!!!");
         } catch (Exception e) {
-            log.error("Custom Scheduler has an error, e.getMessage() " + e.getMessage());
+            logger.error("Custom Scheduler has an error, e.getMessage() " + e.getMessage());
         }
     }
 }

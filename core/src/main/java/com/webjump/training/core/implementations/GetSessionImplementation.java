@@ -27,12 +27,14 @@ public class GetSessionImplementation implements GetSession {
     public Session execute() {
         HashMap < String, Object > param = new HashMap < String, Object > ();
         param.put(ResourceResolverFactory.SUBSERVICE, "getresourceresolver");
-        ResourceResolver resolver = null;
+        ResourceResolver resolver;
+
         try {
             resolver = resolverFactory.getServiceResourceResolver(param);
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }
+
         return resolver.adaptTo(Session.class);
     }
 }

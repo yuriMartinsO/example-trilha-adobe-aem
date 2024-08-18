@@ -33,43 +33,6 @@ public class SavePayloadDataServlet extends SlingAllMethodsServlet {
     private SlingRepository repository;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        ResourceResolver resourceResolver = request.getResourceResolver();
-        Session session = resourceResolver.adaptTo(Session.class);
-        String text = request.getParameter("text");
-
-        PrintWriter out = response.getWriter();
-
-        if (text == null || text.isEmpty()) {
-            response.setStatus(SlingHttpServletResponse.SC_BAD_REQUEST);
-            out.println("Name parameter is missing");
-            return;
-        }
-
-        try {
-            String nodePath = UPDATE_PATH;
-            if (session.nodeExists(nodePath)) {
-                Node node = session.getNode(nodePath);
-                String textValue = node.getProperty("text").getString();
-
-                response.setContentType("application/json");
-                out.println("{");
-                out.println("\"text\": \"" + textValue + "\"");
-                out.println("}");
-            } else {
-                response.setStatus(SlingHttpServletResponse.SC_NOT_FOUND);
-                out.println("Node not found at path: " + nodePath);
-            }
-        } catch (RepositoryException e) {
-            response.setStatus(SlingHttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.println("RepositoryException: " + e.getMessage());
-        } finally {
-            out.flush();
-            out.close();
-        }
-    }
-
-    @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();
         Session session = resourceResolver.adaptTo(Session.class);
