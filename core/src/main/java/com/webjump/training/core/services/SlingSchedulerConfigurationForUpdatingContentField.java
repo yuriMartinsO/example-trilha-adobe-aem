@@ -5,13 +5,13 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * @author Anirudh Sharma
- *
  * This is the configuration class that takes properties for a scheduler to run
  */
-@ObjectClassDefinition(name = "SlingSchedulerConfiguration", description = "Sling scheduler configuration")
-public @interface SlingSchedulerConfigurationTest {
-
+@ObjectClassDefinition(
+    name = "SlingSchedulerConfigurationForUpdatingContentField",
+    description = "Sling scheduler configuration"
+)
+public @interface SlingSchedulerConfigurationForUpdatingContentField {
     /**
      * This method will return the name of the Scheduler
      *
@@ -43,7 +43,7 @@ public @interface SlingSchedulerConfigurationTest {
             name = "Cron Expression",
             description = "Cron expression used by the scheduler",
             type = AttributeType.STRING)
-    public String cronExpression() default "0 * * * * ?";
+    public String cronExpression() default "0/30 * * * * ? *";
 
     /**
      * This method returns a custom parameter just to show case the functionality

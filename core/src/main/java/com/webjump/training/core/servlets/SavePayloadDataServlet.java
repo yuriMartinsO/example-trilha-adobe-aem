@@ -26,7 +26,7 @@ import java.io.IOException;
 })
 @SuppressWarnings({ "serial", "unused" })
 public class SavePayloadDataServlet extends SlingAllMethodsServlet {
-    private static final String CREATE_PATH = "/content/training-sling/us/en/testpage/jcr:content/root/container/container/teste_yuri"; /// Set the base path here
+    private static final String UPDATE_PATH = "/content/training-sling/us/en/testpage/jcr:content/root/container/container/teste_yuri";
     private static final Logger log = LoggerFactory.getLogger(SavePayloadDataServlet.class);
 
     @Reference
@@ -47,7 +47,7 @@ public class SavePayloadDataServlet extends SlingAllMethodsServlet {
         }
 
         try {
-            String nodePath = CREATE_PATH;
+            String nodePath = UPDATE_PATH;
             if (session.nodeExists(nodePath)) {
                 Node node = session.getNode(nodePath);
                 String textValue = node.getProperty("text").getString();
@@ -77,7 +77,7 @@ public class SavePayloadDataServlet extends SlingAllMethodsServlet {
 
         PrintWriter out = response.getWriter();
         try {
-            Node node = JcrUtil.createPath(CREATE_PATH, "nt:unstructured", session);
+            Node node = JcrUtil.createPath(UPDATE_PATH, "nt:unstructured", session);
             node.setProperty("text", text);
             session.save();
             out.println("That went well...");

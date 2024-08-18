@@ -1,6 +1,8 @@
 package com.webjump.training.core.schedulers;
 
-import com.webjump.training.core.implementations.GetResolver;
+import com.day.cq.commons.jcr.JcrUtil;
+import com.webjump.training.core.implementations.GetSession;
+import com.webjump.training.core.services.SlingSchedulerConfigurationForUpdatingContentField;
 import org.apache.sling.commons.scheduler.ScheduleOptions;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.osgi.service.component.annotations.Activate;
@@ -9,42 +11,46 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import com.webjump.training.core.services.SlingSchedulerConfigurationTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.sling.api.resource.ResourceResolver;
-
+import java.util.Date;
+import javax.jcr.Node;
 import javax.jcr.Session;
 
 /**
- * @author Anirudh Sharma
- *
- * A Sling Scheduler demo using OSGi R6 annotations
- *
+ * Custom scheduler for update a single field
  */
-@Component(immediate = true, service = CustomSchedulerTest.class)
-@Designate(ocd = SlingSchedulerConfigurationTest.class)
-public class CustomSchedulerTest implements Runnable {
-    @Reference
-    GetResolver getResolver;
-
+@Component(immediate = true, service = UpdateContentFieldScheduler.class)
+@Designate(ocd = SlingSchedulerConfigurationForUpdatingContentField.class)
+public class UpdateContentFieldScheduler implements Runnable {
     /**
-     * Logger
+     * Class for getting the session
      */
-    private static final Logger log = LoggerFactory.getLogger(CustomSchedulerTest.class);
+    @Reference
+    GetSession getSession;
 
     /**
-     * Custom parameter that is to be read from the configuration
+     *  Path to update the content field
+     */
+    private static final String UPDATE_PATH = "/content/training-sling/us/en/jcr:content/root/container/container/teste_yuri";
+
+    /**
+     *  Logger
+     */
+    private static final Logger log = LoggerFactory.getLogger(UpdateContentFieldScheduler.class);
+
+    /**
+     *  Custom parameter
      */
     private String customParameter;
 
     /**
-     * Id of the scheduler based on its name
+     *  Scheduler id
      */
     private int schedulerId;
 
     /**
-     * Scheduler instance injected
+     *  Scheduler object
      */
     @Reference
     private Scheduler scheduler;
@@ -52,10 +58,10 @@ public class CustomSchedulerTest implements Runnable {
     /**
      * Activate method to initialize stuff
      *
-     * @param config
+     *  @param config
      */
     @Activate
-    protected void activate(SlingSchedulerConfigurationTest config) {
+    protected void activate(SlingSchedulerConfigurationForUpdatingContentField config) {
 
         /**
          * Getting the scheduler id
@@ -74,7 +80,7 @@ public class CustomSchedulerTest implements Runnable {
      * @param config
      */
     @Modified
-    protected void modified(SlingSchedulerConfigurationTest config) {
+    protected void modified(SlingSchedulerConfigurationForUpdatingContentField config) {
 
         /**
          * Removing the scheduler
@@ -94,10 +100,11 @@ public class CustomSchedulerTest implements Runnable {
 
     /**
      * This method deactivates the scheduler and removes it
+     *
      * @param config
      */
     @Deactivate
-    protected void deactivate(SlingSchedulerConfigurationTest config) {
+    protected void deactivate(SlingSchedulerConfigurationForUpdatingContentField config) {
 
         /**
          * Removing the scheduler
@@ -123,7 +130,7 @@ public class CustomSchedulerTest implements Runnable {
      *
      * @param config
      */
-    private void addScheduler(SlingSchedulerConfigurationTest config) {
+    private void addScheduler(SlingSchedulerConfigurationForUpdatingContentField config) {
 
         /**
          * Check if the scheduler is enabled
@@ -161,13 +168,20 @@ public class CustomSchedulerTest implements Runnable {
     @Override
     public void run() {
         try {
-            ResourceResolver serviceResolver = getResolver.getServiceResolver();
-            Session session = serviceResolver.adaptTo(Session.class);
-            log.error("Custom Scheduler is now running using the passed custom paratmeter, customParameter {}", customParameter);
+            Session session = getSession.execute();
+
+            Date date = new Date();
+            long secs = date.getTime()/1000;
+            String text = "Changed value: " + secs;
+
+            Node node = JcrUtil.createPath(UPDATE_PATH, "nt:unstructured", session);
+            node.setProperty("text", text);
+
+            session.save();
+            session.logout();
+            log.info("Custom Scheduler is running correctly!!!");
         } catch (Exception e) {
-            log.error("Custom Scheduler is now running using the passed custom paratmeter, e.printStackTrace() {}" + e.getMessage());
+            log.error("Custom Scheduler has an error, e.getMessage() " + e.getMessage());
         }
-
     }
-
 }
