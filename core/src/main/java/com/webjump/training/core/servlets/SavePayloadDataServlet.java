@@ -50,7 +50,7 @@ public class SavePayloadDataServlet extends SlingAllMethodsServlet {
             out.println("That went not so well...");
             out.flush();
             out.close();
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 }
